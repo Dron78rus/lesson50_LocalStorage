@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <style>
+      p {
+        font-weight: bold;
+      }
+      .topic {
+        text-decoration: underline;
+        margin: 10px;
+      }
+      .task {
+        margin: 20px 10px;
+      }
+      .container {
+        padding-bottom: 15px;
+        border-bottom: 1px black solid;
+      }
+      .button {
+        height: 20px;
+        width: 25px;
+      }
+      .entryField {
+        display: block;
+      }
+    </style>
+
+    <p>Задание 1</p>
+
+    <div class="topic">Основы работы</div>
+    <div class="task">
+      Дан текстареа. В него вводится текст. Сделайте так, чтобы после захода на
+      эту страницу через некоторое время, введенный текст остался в текстареа.
+      Текст должен запоминаться в локальном хранилище.
+    </div>
+
+    <textarea class="textareaT1"></textarea>
+
+    <p>Задание 2</p>
+
+    <div class="topic">Закрепление</div>
+    <div class="task">
+      Дан текстареа. В него можно ввести данные, затем поредактировать их, затем
+      еще поредактировать. Пусть текстареа хранит историю своих изменений (даже
+      после перезагрузки страницы). Сверху над текстареа должны появится
+      стрелочки, с помощью которых можно перемещаться по истории.
+    </div>
+
+    <input type="button" value="↶" class="button Back" />
+    <input type="button" value="↷" class="button Forward" />
+    <textarea class="entryField textareaT2"></textarea>
+
+    <script>
+      // http:old.code.mu/tasks/javascript/advanced/rabota-s-lokalnym-hranilishchem-v-javascript.html
+
+      // задание 1
+
+      const d = document
+      const textareaT1 = d.querySelector('.textareaT1')
+
+      function outputOfResult(parent, receivedValue, initialValue = 'none') {
+        if (initialValue !== 'none') {
+          const sourceString = `Исходная строка: ${initialValue}`
+          const newDiv = d.createElement('div')
+          parent.appendChild(newDiv)
+          newDiv.innerHTML = sourceString
+        }
+
+        const modifiedString = `Результат: ${receivedValue}`
+        const newDiv2 = d.createElement('div')
+        parent.appendChild(newDiv2)
+        newDiv2.innerHTML = modifiedString
+      }
+
+      textareaT1.addEventListener('input', () => {
+        let value = textareaT1.value
+        localStorage.setItem('textareaT1', value)
+      })
+
+      textareaT1.value = localStorage.getItem('textareaT1')
+
+      // задание 2
+
+      const textareaT2 = d.querySelector('.textareaT2')
+      const button = d.querySelectorAll('.button')
+      let count, mainCounter
+
+      // ;[
+      //   'count',
+      //   'mainCounter',
+      //   `textareaT2_${mainCounter}`,
+      //   `textareaT2_1`,
+      // ].forEach((item) => localStorage.removeItem(item))
+
+      console.log(localStorage.getItem(`textareaT2_1`))
+
+      localStorage.getItem('mainCounter') == null
+        ? (mainCounter = 1)
+        : (mainCounter = localStorage.getItem('mainCounter'))
+      localStorage.getItem('mainCounter') == null
+        ? (count = 1)
+        : (count = mainCounter)
+
+      if (count == mainCounter) {
+        button[1].style.visibility = 'hidden'
+      }
+
+      if (localStorage.getItem(`textareaT2_${count}`) === null) {
+        button[0].style.visibility = 'hidden'
+      }
+
+      textareaT2.addEventListener('input', () => {
+        mainCounter++
+        let value = textareaT2.value
+        localStorage.setItem(`textareaT2_${mainCounter}`, value)
+        localStorage.setItem('count', `${count}`)
+        localStorage.setItem('mainCounter', `${mainCounter}`)
+
+        button[1].style.visibility = 'hidden'
+        button[0].style.visibility = 'visible'
+
+        count = mainCounter
+      })
+
+      textareaT2.value = localStorage.getItem(`textareaT2_${mainCounter}`)
+
+      button[0].addEventListener('click', () => {
+        count--
+        if (count == 1) {
+          button[0].style.visibility = 'hidden'
+        }
+        button[1].style.visibility = 'visible'
+        textareaT2.value = localStorage.getItem(`textareaT2_${count}`)
+      })
+
+      button[1].addEventListener('click', () => {
+        count++
+        textareaT2.value = localStorage.getItem(`textareaT2_${count}`)
+
+        if (count == mainCounter) {
+          button[1].style.visibility = 'hidden'
+        }
+        if (count > 1) {
+          button[0].style.visibility = 'visible'
+        }
+      })
+    </script>
+  </body>
+</html>
