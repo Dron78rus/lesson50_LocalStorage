@@ -29,6 +29,24 @@
       .entryField {
         display: block;
       }
+      label {
+        display: block;
+        margin: 10px 0 10px;
+      }
+      .checkboxText {
+        display: inline;
+      }
+      .buttonT4 {
+        display: block;
+      }
+      .newDiv {
+        margin: 10px 0 10px;
+      }
+      .button {
+        height: 20px;
+        width: 150px;
+        margin: 10px 0 5px;
+      }
     </style>
 
     <p>Задание 1</p>
@@ -41,6 +59,7 @@
     </div>
 
     <textarea class="textareaT1"></textarea>
+    <hr />
 
     <p>Задание 2</p>
 
@@ -55,6 +74,58 @@
     <input type="button" value="↶" class="button Back" />
     <input type="button" value="↷" class="button Forward" />
     <textarea class="entryField textareaT2"></textarea>
+    <hr />
+
+    <p>Задание 3</p>
+
+    <div class="task">
+      Дана форма с инпутами, текстареа, чекбоксами, радио кнопочками, селектами
+      и тп. Пользователь вводит какие-то данные и закрывает страницу (не факт,
+      что он заполнил всю форму). Сделайте так, чтобы при следующем заходе на
+      страницу введенные им ранее данные стояли на своих местах. Сделайте ваш
+      скрипт как можно более универсальным.
+    </div>
+
+    <form action="">
+      <input type="text" class="inpT3" />
+      <input type="text" class="inpT3" />
+      <input type="text" class="inpT3" />
+      <input type="text" class="inpT3" />
+      <label>
+        <input type="checkbox" name="checkboxT3" class="checkboxT3" />
+        <div class="checkboxText">вариант1</div>
+      </label>
+      <label>
+        <input type="checkbox" name="checkboxT3" class="checkboxT3" />
+        <div class="checkboxText">вариант2</div> </label
+      ><label>
+        <input type="checkbox" name="checkboxT3" class="checkboxT3" />
+        <div class="checkboxText">вариант3</div> </label
+      ><label>
+        <input type="checkbox" name="checkboxT3" class="checkboxT3" />
+        <div class="checkboxText">вариант4</div>
+      </label>
+      <textarea class="textareaT3"></textarea>
+    </form>
+    <hr />
+
+    <p>Задание 4</p>
+
+    <div class="task">
+      Реализуйте записную книгу, хранящую данные в локальном хранилище.
+    </div>
+
+    <textarea
+      class="textareaT4"
+      placeholder="Место для ваших заметок"
+    ></textarea>
+    <input type="button" class="button buttonT4" value="Сохранить" />
+    <input
+      type="button"
+      class="button buttonT4 cleaning"
+      value="Удалить заметки"
+    />
+    <div class="container divT4"></div>
 
     <script>
       // http:old.code.mu/tasks/javascript/advanced/rabota-s-lokalnym-hranilishchem-v-javascript.html
@@ -149,6 +220,92 @@
         if (count > 1) {
           button[0].style.visibility = 'visible'
         }
+      })
+
+      // задание 3
+
+      const inpT3 = d.querySelectorAll('.inpT3')
+      const checkboxT3 = d.querySelectorAll('.checkboxT3')
+      const textareaT3 = d.querySelector('.textareaT3')
+
+      for (let i = 0; i < inpT3.length; i++) {
+        inpT3[i].addEventListener('input', () => {
+          localStorage.setItem(
+            `${inpT3[i].className}_${i}`,
+            `${inpT3[i].value}`
+          )
+        })
+      }
+
+      for (let i = 0; i < checkboxT3.length; i++) {
+        checkboxT3[i].addEventListener('change', () => {
+          localStorage.setItem(
+            `${checkboxT3[i].className}_${i}_checked`,
+            `${checkboxT3[i].checked}`
+          )
+          console.log(
+            'localStorage.getItem(' +
+              `${checkboxT3[i].className}_${i}_checked` +
+              ') = ' +
+              localStorage.getItem(`${checkboxT3[i].className}_${i}_checked`)
+          )
+        })
+      }
+
+      textareaT3.addEventListener('input', () => {
+        localStorage['textareaT3_value'] = textareaT3.value
+      })
+
+      for (let i = 0; i < inpT3.length; i++) {
+        inpT3[i].value = localStorage.getItem(`${inpT3[i].className}_${i}`)
+      }
+
+      for (let i = 0; i < checkboxT3.length; i++) {
+        checkboxT3[i].checked = JSON.parse(
+          localStorage.getItem(`${checkboxT3[i].className}_${i}_checked`)
+        )
+      }
+
+      textareaT3.value = localStorage.getItem('textareaT3_value')
+
+      // задание 4
+
+      const textareaT4 = d.querySelector('.textareaT4')
+      const buttonT4 = d.querySelector('.buttonT4')
+      const divT4 = d.querySelector('.divT4')
+      const cleaning = d.querySelector('.cleaning ')
+      let countT4
+
+      if (localStorage['countT4'] == undefined) {
+        countT4 = 1
+      } else countT4 = localStorage['countT4']
+
+      function outputOfResult(par, receivedValue, count) {
+        const modifiedString = `Заметка о жизни № ${count}: <br> ${receivedValue}`
+        const newDiv = d.createElement('div')
+        newDiv.classList.add('newDiv')
+        par.appendChild(newDiv)
+        newDiv.innerHTML = modifiedString
+      }
+
+      for (let i = 1; i < countT4; i++) {
+        outputOfResult(divT4, localStorage[`textareaT4.value_${i}`], i)
+      }
+
+      buttonT4.addEventListener('click', () => {
+        outputOfResult(divT4, textareaT4.value, countT4)
+
+        localStorage[`textareaT4.value_${countT4}`] = textareaT4.value
+        countT4++
+        localStorage['countT4'] = countT4
+      })
+
+      cleaning.addEventListener('click', () => {
+        for (let i = 1; i <= countT4; i++) {
+          delete localStorage[`textareaT4.value_${i}`]
+        }
+        divT4.innerHTML = ''
+        countT4 = 1
       })
     </script>
   </body>
